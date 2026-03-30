@@ -37,13 +37,6 @@ describe("WeixinConfigSchema", () => {
     expect(result.accounts?.acc2?.name).toBe("Bot 2");
   });
 
-  it("accepts logUploadUrl", () => {
-    const result = WeixinConfigSchema.parse({
-      logUploadUrl: "https://logs.example.com/upload",
-    });
-    expect(result.logUploadUrl).toBe("https://logs.example.com/upload");
-  });
-
   it("rejects invalid types", () => {
     expect(() => WeixinConfigSchema.parse({ enabled: "yes" })).toThrow();
   });

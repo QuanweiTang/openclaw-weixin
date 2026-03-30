@@ -1,6 +1,6 @@
 {
-  "name": "@tencent/openclaw-weixin",
-  "version": "2.0.0",
+  "name": "@tencent-weixin/openclaw-weixin",
+  "version": "2.1.1",
   "description": "OpenClaw Weixin channel",
   "license": "MIT",
   "author": "Tencent",
@@ -20,9 +20,7 @@
     "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
-    "prepublishOnly": "npm run typecheck && npm run build",
-    "publish:internal": "node scripts/publish.mjs internal",
-    "publish:external": "node scripts/publish.mjs external"
+    "prepublishOnly": "npm run typecheck && npm run build"
   },
   "engines": {
     "node": ">=22"
@@ -30,9 +28,6 @@
   "dependencies": {
     "qrcode-terminal": "0.12.0",
     "zod": "4.3.6"
-  },
-  "peerDependencies": {
-    "openclaw": ">=2026.3.22"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^3.1.0",
@@ -59,5 +54,6 @@
       "defaultChoice": "npm",
       "minHostVersion": ">=2026.3.22"
     }
-  }
+  },
+  "ilink_appid": "bot"
 }

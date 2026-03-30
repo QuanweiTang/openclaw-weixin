@@ -95,7 +95,37 @@ describe("uploadFileToWeixin", () => {
     }
   });
 
-  it("throws when getUploadUrl returns no upload_param", async () => {
+  it("uploads via upload_full_url when upload_param is absent", async () => {
+    const tmpDir = fsSync.mkdtempSync(path.join(os.tmpdir(), "upload-fullurl-test-"));
+    try {
+      const filePath = path.join(tmpDir, "test.png");
+      await fs.writeFile(filePath, "fake-image-data");
+
+      const fullUrl = "http://cdn.example/c2c/upload?encrypted_query_param=x&filekey=y";
+      mockGetUploadUrl.mockResolvedValueOnce({ upload_full_url: fullUrl });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "x-encrypted-param": "dl-full" }),
+      });
+
+      const result = await uploadFileToWeixin({
+        filePath,
+        toUserId: "user1",
+        opts: { baseUrl: "https://api.com", token: "tok" },
+        cdnBaseUrl: "https://ignored-cdn.com",
+      });
+
+      expect(result.downloadEncryptedQueryParam).toBe("dl-full");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [calledUrl] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(calledUrl).toBe(fullUrl);
+    } finally {
+      fsSync.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws when getUploadUrl returns neither upload_full_url nor upload_param", async () => {
     const tmpDir = fsSync.mkdtempSync(path.join(os.tmpdir(), "upload-fail-test-"));
     try {
       const filePath = path.join(tmpDir, "test.txt");
@@ -110,7 +140,7 @@ describe("uploadFileToWeixin", () => {
           opts: { baseUrl: "https://api.com" },
           cdnBaseUrl: "https://cdn.com",
         }),
-      ).rejects.toThrow("upload_param");
+      ).rejects.toThrow("no upload URL");
     } finally {
       fsSync.rmSync(tmpDir, { recursive: true, force: true });
     }

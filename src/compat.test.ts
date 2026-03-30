@@ -75,7 +75,7 @@ describe("assertHostCompatibility", () => {
 
   it("throws for an unsupported version with a helpful message", () => {
     expect(() => assertHostCompatibility("2026.1.5")).toThrowError(
-      new RegExp(`openclaw-weixin@${PLUGIN_VERSION}.*requires.*${SUPPORTED_HOST_MIN}.*legacy`),
+      new RegExp(`openclaw-weixin@${PLUGIN_VERSION}.*requires.*${SUPPORTED_HOST_MIN}`),
     );
   });
 });

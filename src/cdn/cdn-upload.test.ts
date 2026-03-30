@@ -64,6 +64,29 @@ describe("uploadBufferToCdn", () => {
     expect(result.downloadParam).toBe("dl-param");
   });
 
+  it("POSTs to uploadFullUrl when provided", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "x-encrypted-param": "dl-full" }),
+    });
+
+    const fullUrl = "http://host/c2c/upload?q=1";
+    const result = await uploadBufferToCdn({
+      buf: Buffer.from("data"),
+      uploadFullUrl: fullUrl,
+      filekey: "fk",
+      cdnBaseUrl: "https://unused.example",
+      label: "test",
+      aeskey,
+    });
+    expect(result.downloadParam).toBe("dl-full");
+    expect(mockFetch).toHaveBeenCalledWith(
+      fullUrl,
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
   it("retries on server error then succeeds", async () => {
     mockFetch
       .mockResolvedValueOnce({

@@ -14,7 +14,6 @@ export default defineConfig({
         "src/monitor/monitor.ts",
         "src/channel.ts",
         "src/auth/login-qr.ts",
-        "src/log-upload.ts",
         "src/media/media-download.ts",
         "src/cdn/pic-decrypt.ts",
         "src/auth/accounts.ts",
