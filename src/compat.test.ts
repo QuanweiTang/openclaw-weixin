@@ -6,7 +6,6 @@ import {
   isHostVersionSupported,
   assertHostCompatibility,
   SUPPORTED_HOST_MIN,
-  PLUGIN_VERSION,
 } from "./compat.js";
 
 describe("parseOpenClawVersion", () => {
@@ -75,7 +74,7 @@ describe("assertHostCompatibility", () => {
 
   it("throws for an unsupported version with a helpful message", () => {
     expect(() => assertHostCompatibility("2026.1.5")).toThrowError(
-      new RegExp(`openclaw-weixin@${PLUGIN_VERSION}.*requires.*${SUPPORTED_HOST_MIN}`),
+      new RegExp(`This version of openclaw-weixin requires.*${SUPPORTED_HOST_MIN}`),
     );
   });
 });

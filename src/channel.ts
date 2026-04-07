@@ -24,6 +24,7 @@ import {
   waitForWeixinLogin,
 } from "./auth/login-qr.js";
 import type { WeixinQrStartResult, WeixinQrWaitResult } from "./auth/login-qr.js";
+import { monitorWeixinProvider } from "./monitor/monitor.js";
 import { sendWeixinMediaFile } from "./messaging/send-media.js";
 import { sendMessageWeixin } from "./messaging/send.js";
 import { downloadRemoteImageToTemp } from "./cdn/upload.js";
@@ -381,10 +382,6 @@ export const weixinPlugin: ChannelPlugin<ResolvedWeixinAccount> = {
 
       const logPath = aLog.getLogFilePath();
       ctx.log?.info?.(`[${account.accountId}] weixin logs: ${logPath}`);
-
-      // Load the monitor only when an account actually starts so plugin registration
-      // does not pull command-auth/provider runtime code into the loader path.
-      const { monitorWeixinProvider } = await import("./monitor/monitor.js");
 
       return monitorWeixinProvider({
         baseUrl: account.baseUrl,
