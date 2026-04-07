@@ -4,6 +4,17 @@
 
 This project follows the [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [2.1.7] - 2026-04-07
+
+### Fixed
+
+- **Plugin registration re-entrance:** Lazy-import `monitorWeixinProvider` inside `startAccount` in `channel.ts` to avoid pulling in the monitor → process-message → command-auth chain at plugin registration time, which could re-enter the plugin/provider registry before the account starts.
+- **Initialization side effect:** Lazy-import `resolveSenderCommandAuthorizationWithRuntime` / `resolveDirectDmAuthorizationOutcome` in `process-message.ts` to prevent `ensureContextWindowCacheLoaded` from being triggered during module initialization, which caused `loadOpenClawPlugins` re-entrance.
+
+### Changed
+
+- **Tool-call outbound path:** `sendWeixinOutbound` now applies `StreamingMarkdownFilter` to the outbound text, consistent with the model-output path in `process-message`.
+
 ## [2.1.4] - 2026-04-03
 
 ### Changed

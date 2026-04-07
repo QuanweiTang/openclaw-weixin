@@ -7,7 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
-    "declaration": true,
+    "declaration": false,
     "sourceMap": true,
     "resolveJsonModule": true,
     "isolatedModules": true

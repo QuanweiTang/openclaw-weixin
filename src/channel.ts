@@ -24,9 +24,11 @@ import {
   waitForWeixinLogin,
 } from "./auth/login-qr.js";
 import type { WeixinQrStartResult, WeixinQrWaitResult } from "./auth/login-qr.js";
-import { monitorWeixinProvider } from "./monitor/monitor.js";
+// Lazy-imported inside startAccount to avoid pulling in the monitor -> process-message ->
+// command-auth chain during plugin registration, which can re-enter plugin/provider registry
+// resolution before the account actually starts.
 import { sendWeixinMediaFile } from "./messaging/send-media.js";
-import { sendMessageWeixin } from "./messaging/send.js";
+import { sendMessageWeixin, StreamingMarkdownFilter } from "./messaging/send.js";
 import { downloadRemoteImageToTemp } from "./cdn/upload.js";
 
 /** Returns true when mediaUrl refers to a local filesystem path (absolute or relative). */
@@ -119,7 +121,10 @@ async function sendWeixinOutbound(params: {
   if (!params.contextToken) {
     aLog.warn(`sendWeixinOutbound: contextToken missing for to=${params.to}, sending without context`);
   }
-  const result = await sendMessageWeixin({ to: params.to, text: params.text, opts: {
+  const f = new StreamingMarkdownFilter();
+  const rawText = params.text ?? "";
+  const filteredText = f.feed(rawText) + f.flush();
+  const result = await sendMessageWeixin({ to: params.to, text: filteredText, opts: {
     baseUrl: account.baseUrl,
     token: account.token,
     contextToken: params.contextToken,
@@ -383,6 +388,7 @@ export const weixinPlugin: ChannelPlugin<ResolvedWeixinAccount> = {
       const logPath = aLog.getLogFilePath();
       ctx.log?.info?.(`[${account.accountId}] weixin logs: ${logPath}`);
 
+      const { monitorWeixinProvider } = await import("./monitor/monitor.js");
       return monitorWeixinProvider({
         baseUrl: account.baseUrl,
         cdnBaseUrl: account.cdnBaseUrl,
